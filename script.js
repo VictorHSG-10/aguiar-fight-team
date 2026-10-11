@@ -32,5 +32,25 @@ document.querySelectorAll(".js-whats").forEach((link) => {
   }
 });
 
-// ===== 3. Ano atual no rodapé =====
+// ===== 3. Botão flutuante do celular =====
+// Ele só aparece quando nenhum outro botão de WhatsApp está visível na tela,
+// e some quando o rodapé aparece. Assim não fica repetido nem cobre o fim da página.
+const flutuante = document.querySelector(".flutuante");
+
+if (flutuante && "IntersectionObserver" in window) {
+  const naTela = new Set(); // elementos observados que estão visíveis agora
+
+  const observador = new IntersectionObserver((entradas) => {
+    entradas.forEach((entrada) => {
+      if (entrada.isIntersecting) naTela.add(entrada.target);
+      else naTela.delete(entrada.target);
+    });
+    flutuante.classList.toggle("flutuante--escondido", naTela.size > 0);
+  }, { rootMargin: "-72px 0px 0px 0px" }); // ignora o que está escondido atrás do cabeçalho fixo
+
+  flutuante.classList.add("flutuante--escondido"); // começa escondido: o botão do topo já está na tela
+  document.querySelectorAll("main .js-whats, .rodape").forEach((elemento) => observador.observe(elemento));
+}
+
+// ===== 4. Ano atual no rodapé =====
 document.querySelector("#ano").textContent = new Date().getFullYear();
